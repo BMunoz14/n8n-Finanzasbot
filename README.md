@@ -28,13 +28,6 @@ Puedes elegir entre dos opciones:
 - Tener corriendo **Ollama local** con un modelo descargado (`mistral`, `llama3`, etc.)
 - O usar una API externa de otro modelo LLM (opcional)
 
-Para Ollama local, corre:
-
-```bash
-docker run -d --name ollama -p 11434:11434 -v ollama-data:/root/.ollama ollama/ollama
-docker exec -it ollama ollama run mistral
-```
-
 ### 4. 🐳 Ejecutar Docker Compose
 
 Este proyecto se despliega fácilmente usando Docker Compose. Usa:
