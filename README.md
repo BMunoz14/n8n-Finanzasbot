@@ -52,6 +52,8 @@ docker compose up -d
 
 ¡Listo! Ya tienes el flujo configurado.
 
+![image](https://github.com/user-attachments/assets/1edcad17-3871-48a0-812a-9d48ea20af25)
+
 ### 6. 🔐 Crear credenciales en Google Cloud Console
 
 1. Ve a 👉 [https://console.cloud.google.com/](https://console.cloud.google.com/)
@@ -87,3 +89,6 @@ Ya puedes disfrutar de un asistente financiero automatizado que:
 - Te responde por Telegram con resúmenes y consejos
 
 💸 Automatiza el control de tus finanzas y deja de preocuparte por hacer cuentas manuales.
+
+![image](https://github.com/user-attachments/assets/e2bb4867-6689-4884-b493-2c9132c59459)
+
