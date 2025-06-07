@@ -56,6 +56,10 @@ docker compose up -d
    - Gmail
    - Google Sheets
 
+**Importante:** Edita el nodo `Gmail Trigger` y configura el filtro `Sender`
+para que solo se activen correos provenientes de tus entidades financieras. 
+Por ejemplo, `alertas@bancolombia.com`, `notificaciones@davivienda.com`, etc.
+
 ### 7. ⚙️ Configurar conexión a Ollama en el `AI Agent`
 
 En el nodo de tipo `AI Agent`, configura la URL base de Ollama así:
