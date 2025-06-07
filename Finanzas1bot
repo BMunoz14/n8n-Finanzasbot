@@ -1,0 +1,433 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "sender": ""
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        100
+      ],
+      "id": "0d0cc7bf-ab2e-4a93-820d-7a99bf5fc5a4",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.snippet }}",
+        "options": {
+          "systemMessage": "Actúa como un asistente financiero inteligente especializado en la identificación y categorización automática de gastos personales a partir de mensajes de texto, notificaciones bancarias o descripciones de transacciones. Tu función principal es extraer de manera precisa la siguiente información de cada mensaje recibido:\n\n- **name**: Nombre del establecimiento o entidad donde se realizó el gasto.\n- **value**: Valor numérico del gasto en pesos colombianos.\n- **category**: Categoría del gasto (debe ser una de las siguientes: hogar, personales, ocio, viajes, universidad, carro, tarjetas, mascota, extras).\n- **date**: Fecha en que se efectuó la transacción (formato: DD/MM/YYYY).\n\nTu conocimiento se basa en el análisis de texto financiero real de bancos como Bancolombia, Davivienda, Nequi, entre otros, y estás entrenado para reconocer patrones comunes de transacciones, como compras, retiros, transferencias, pagos de servicios, suscripciones y más.\n\n---\n\n# Instrucciones de comportamiento\n\n1. Lee cuidadosamente el texto completo del mensaje.\n2. Extrae de forma precisa el **nombre del comercio**, **valor del gasto**, **fecha** y una **categoría apropiada** según el contexto.\n3. Si el mensaje no representa un gasto (por ejemplo, una transferencia entre cuentas propias), puedes asignar la categoría **extras**.\n4. Asegúrate de **convertir los valores monetarios a números** (sin signos de dólar ni comas innecesarias).\n5. La **fecha** debe ser entregada en formato `DD/MM/YYYY`.\n6. Usa tu criterio semántico para asignar la **categoría más relevante** según el comercio o la descripción del gasto.\n7. No expliques tu razonamiento. Tu salida debe ser **únicamente en formato JSON**, limpio, sin ningún texto adicional.\n\n---\n\n# Categorías disponibles\n\n- hogar  \n- personales  \n- ocio  \n- viajes  \n- universidad  \n- carro  \n- tarjetas  \n- mascota  \n- extras\n\n---\n\n# Formato de salida\n\njson\n{\n  \"name\": \"nombre del comercio o sitio\",\n  \"value\": valor_en_número,\n  \"category\": \"categoría\",\n  \"date\": \"DD/MM/YYYY\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        100
+      ],
+      "id": "aea905b5-c7ad-4589-ace1-fe3339084629",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        280
+      ],
+      "id": "f2ee6277-e4b8-4d85-b337-ab192d198afe",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "92Yykiy5kgGkeh1P",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1fTIPvZ84Jne2e5mq0Y21VaaXd3WA4A3nLWw_ps4-M78",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FECHA": "={{ $json.date }}",
+            "NOMBRE": "={{ $json.name }}",
+            "CATEGORIA": "={{ $json.category }}",
+            "CANTIDAD": "={{ $json.value }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "FECHA",
+              "displayName": "FECHA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NOMBRE",
+              "displayName": "NOMBRE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CATEGORIA",
+              "displayName": "CATEGORIA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CANTIDAD",
+              "displayName": "CANTIDAD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        180,
+        100
+      ],
+      "id": "fed5a703-5557-4e76-878a-01c26798efa9",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.output\nconst cleanedText = text\n  .replace(/```json\\n?/, '')  // quita la apertura ```json\n  .replace(/```$/, '')        // quita el cierre ```\n  .trim(); \n\nconst jsonObject = JSON.parse(cleanedText);\n\nreturn jsonObject"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20,
+        100
+      ],
+      "id": "7bded3da-90d9-4b64-9d2a-46ae93312730",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -460,
+        520
+      ],
+      "id": "4303ef35-e24d-430a-b089-b4e18251cff8",
+      "name": "Telegram Trigger",
+      "webhookId": "778938f5-f8ac-46b0-814e-12216d000134",
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Actúa como un asesor financiero personal experto en finanzas del hogar. Tienes acceso a un tool de Google Sheets, el cual debes usar para leer una hoja que contiene los gastos recientes del usuario. Cada fila tiene: FECHA, NOMBRE, CATEGORÍA y CANTIDAD.\n\nUsa SIEMPRE el Tool de Google Sheets llamado \"readSheet\" para consultar los movimientos antes de responder.\n\nTambién recibirás una consulta del usuario por Telegram. Tu objetivo es:\n\n1. Consultar la hoja de Google Sheets para leer los movimientos financieros.\n2. Analizar y resumir los gastos recientes.\n3. Calcular el **total gastado por cada categoría** y mostrar un listado con las categorías más utilizadas y su gasto total.\n4. Identificar hábitos o patrones de gasto, y sugerir mejoras.\n5. Dar al menos 2 tips financieros personalizados basados en los datos del usuario.\n6. Responder con claridad y empatía a la consulta del usuario.\n\n### Consulta del usuario:\n{{input}}\n\nPresenta la respuesta en lenguaje natural, con datos resumidos, dame el texto sin asteriscos ni caracteres especiales. No repitas literalmente cada gasto. Si no hay datos suficientes, pídele al usuario que conecte su cuenta bancaria o que agregue más información.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        520
+      ],
+      "id": "66a835df-ed5e-41e6-a201-e8698e089854",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        780
+      ],
+      "id": "5b40ca7c-0e4c-4b16-b886-57fdcc0571b9",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "92Yykiy5kgGkeh1P",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fTIPvZ84Jne2e5mq0Y21VaaXd3WA4A3nLWw_ps4-M78",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        100,
+        780
+      ],
+      "id": "88de46ff-2d07-40a5-85f2-27b737515548",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        520
+      ],
+      "id": "a6ae4b08-7861-4ef4-bda7-04bb7a79326f",
+      "name": "Telegram",
+      "webhookId": "6bb207be-d273-4cf6-ac7e-d05af48eabce",
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "AGENTE RESPUESTA",
+        "height": 480,
+        "width": 980
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        460
+      ],
+      "typeVersion": 1,
+      "id": "9a83faba-6dac-4f72-98fa-46ede8cac2de",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "AGENTE GMAIL\n",
+        "height": 400,
+        "width": 980,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        40
+      ],
+      "typeVersion": 1,
+      "id": "ace8f90e-6284-4e01-9a40-8e3985f01971",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        []
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "IN0FylBo2lBnszft",
+  "tags": []
+}
